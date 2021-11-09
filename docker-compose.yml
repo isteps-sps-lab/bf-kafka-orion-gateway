@@ -1,0 +1,63 @@
+version: '2'
+services:
+
+  kafka-orion-gateway:
+    container_name: kafka-orion-gateway
+    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/kafka-orion-gateway:0.1.4
+    environment:
+      ORION_BROKER: http://orion:1026/
+      ORION_GATEWAY_ENDPOINT: http://kafka-orion-gateway:8080
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: middleware:9092
+      SPRING_KAFKA_PROPERTIES_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      SPRING_KAFKA_PROPERTIES_BASIC_AUTH_USER_INFO: $BF_USER:$BF_PASSWORD
+      SPRING_KAFKA_PROPERTIES_SCHEMA_REGISTRY_URL: http://middleware:8081
+    depends_on:
+      - middleware
+      - orion
+
+  kafka-message-model:
+    container_name: kafka-message-model
+    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/kafka-message-model:0.1
+    restart: on-failure
+    volumes:
+      - message_model:/schemas:rw
+
+  middleware:
+    container_name: middleware
+    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/middleware:0.1
+    environment:
+      ADV_HOST: middleware
+      BROKER_PORT: 9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://middleware:9092
+      PASSWORD: $BF_PASSWORD
+      REGISTRY_PORT: 8081
+      REST_PORT: 8082
+      USER: $BF_USER
+      WEB_PORT: 3040
+      ZK_PORT: 3181
+    ports:
+      - 3040:3040
+    restart: on-failure
+    volumes:
+      - message_model:/schemas:rw
+    depends_on:
+      - kafka-message-model
+
+  mongo:
+    container_name: mongo
+    image: mongo:4.4
+    command: --nojournal
+
+  orion:
+    container_name: orion
+    image: fiware/orion:3.1.0
+    ports:
+      - 1026:1026
+    command: -dbhost mongo -corsOrigin __ALL -inReqPayloadMaxSize 2097152
+    depends_on:
+      - mongo
+
+volumes:
+  message_model:
+  models_db_data:
+  fams_data:
