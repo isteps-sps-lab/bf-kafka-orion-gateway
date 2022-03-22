@@ -3,7 +3,7 @@ services:
 
   kafka-orion-gateway:
     container_name: kafka-orion-gateway
-    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/kafka-orion-gateway:0.1.4
+    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/kafka-orion-gateway:0.1.6
     environment:
       ORION_BROKER: http://orion:1026/
       ORION_GATEWAY_ENDPOINT: http://kafka-orion-gateway:8080
