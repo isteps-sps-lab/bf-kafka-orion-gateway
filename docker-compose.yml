@@ -61,3 +61,7 @@ volumes:
   message_model:
   models_db_data:
   fams_data:
+
+networks:
+  default:
+    name: betterfactory_chri
