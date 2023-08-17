@@ -2,9 +2,27 @@
 
 This repository describes how to use the Docker image for the *kafka-orion-gateway* component, as part of the Cognitive Human Robot Interaction (C-HRI) scenario defined within the Better Factory project. The deployment is provided by means of Docker Compose, and the set of initialized components is depicted in the picture here below:
 
-![docker-deployment](./docker-deployment.png)
+``` mermaid
+flowchart LR
+    classDef supsi fill:#B4C7DC,color:#000;
+    classDef pvt fill:#B2B2B2,color:#000;
+    classDef pub fill:#E8F2A1,color:#000;
 
-The blue-colored components represent the core components for which SUPSI provides and maintains a Docker image, while the green-colored ones represent dependencies that are provided as Docker images by third parties.
+    subgraph SUPSI
+    direction TB
+    kafka-message-model:::supsi --> middleware:::supsi
+    middleware:::supsi <--> kafka-orion-gateway:::supsi
+    end
+
+    subgraph Public Deps
+    kafka-orion-gateway:::supsi <--> orion:::pub
+    orion:::pub <--> mongo:::pub
+    end
+```
+
+The blue-colored components represent the core components for which SUPSI provides and maintains a Docker image; the other components represent Docker images that are publicly available (green-colored).
+
+> NOTE: In this deployment version, all the Docker images but the public ones can be downloaded from the [RAMP Docker Registry](https://docker.ramp.eu/).
 
 ### kafka-orion-gateway
 The *kafka-orion-gateway* component serves as a data gateway between two brokers, i.e., Kafka Broker (KB) and Orion Context Broker by FIWARE (OCB).
@@ -38,25 +56,31 @@ The *mongo* component runs an official MongoDB docker image (v4.4).
 
 ### Requirements
 
-All the components are provided as Dockerized applications, thus the following software is required:
+All the components are provided as Docker images, thus the following
+software is required:
 
 - Docker
 - Docker Compose
 
-We tested our deployment on a machine running Ubuntu 21.04, with Docker v20.10.8, and Docker Compose v1.29.2.
+We tested our deployment on machines running different configurations:
+- Ubuntu 21, Docker 20.10.8, Docker Compose 1.29.2
+- Ubuntu 22, Docker  24.0.5, Docker Compose 2.20.2
 
 ### Install
 
 Before running the containers, it is required to download the Docker images from their respective registries.
 While some images are publicly available, some other require credentials to be downloaded from private registries.
 
-> NOTE: Images provided by SUPSI can be download from the GitLab container registry, which supports the token-based authentication. Please send your request for a new token to the repository maintainers.
+> NOTE: Images can be download from the RAMP Docker
+> registry, which supports the token-based authentication. Please send your
+> request for a new token to the RAMP Docker registry maintainers.
 
-Once you are provided with a username and a token, you can issue the following command to login to the private GitLab Docker registry and download the images:
+Once you are provided with a username and a token, you can issue the following
+command to login to the RAMP Docker Registry and download the images:
 
-```shell
-docker login registry.example.com -u <username> -p <token>
-docker-compose pull
+```bash
+docker login docker.ramp.eu -u <username> -p <token>
+docker-compose pull <image>:<tag>
 ```
 
 ### Usage

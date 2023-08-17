@@ -17,14 +17,14 @@ services:
 
   kafka-message-model:
     container_name: kafka-message-model
-    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/kafka-message-model:0.1
+    image: docker.ramp.eu/supsi-pvt/kafka-message-model:0.1.0
     restart: on-failure
     volumes:
       - message_model:/schemas:rw
 
   middleware:
     container_name: middleware
-    image: registry.gitlab.com/isteps-sps-lab/human-robot-interaction/better-factory/middleware:0.1
+    image: docker.ramp.eu/supsi-pvt/middleware:0.1.1
     environment:
       ADV_HOST: middleware
       BROKER_PORT: 9092
@@ -60,7 +60,6 @@ services:
 volumes:
   message_model:
   models_db_data:
-  fams_data:
 
 networks:
   default:
